@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
+import TeamBadge from '../components/TeamBadge'
 import type { Player, Team } from '../types'
 
 const FORMATIONS = ['4-4-2', '4-3-3', '3-5-2', '5-3-2', '4-5-1']
@@ -38,7 +39,10 @@ export default function TeamManager() {
     return (
       <div>
         <header className="topbar">
-          <h1>{team.name}</h1>
+          <h1>
+            <TeamBadge name={team.name} primaryColor={team.primary_color} secondaryColor={team.secondary_color} />
+            {team.name}
+          </h1>
         </header>
         <section className="card">
           <h2>Trupp</h2>
@@ -73,6 +77,13 @@ export default function TeamManager() {
     else refresh()
   }
 
+  async function changeColors(primary_color: string, secondary_color: string) {
+    if (!team) return
+    const { error } = await supabase.from('teams').update({ primary_color, secondary_color }).eq('id', team.id)
+    if (error) setError(error.message)
+    else refresh()
+  }
+
   async function releasePlayer(player: Player) {
     if (!window.confirm(`Släpp ${player.name} till marknaden som fri agent?`)) return
     const { error } = await supabase.rpc('release_player', { p_player_id: player.id })
@@ -83,8 +94,32 @@ export default function TeamManager() {
   return (
     <div>
       <header className="topbar">
-        <h1>{team.name}</h1>
+        <h1>
+          <TeamBadge name={team.name} primaryColor={team.primary_color} secondaryColor={team.secondary_color} />
+          {team.name}
+        </h1>
       </header>
+
+      <section className="card">
+        <h2>Klubbfärger</h2>
+        <p>Syns på lagets märke överallt i spelet (tabellen, matcher, startsidan).</p>
+        <label style={{ marginRight: '1rem' }}>
+          Huvudfärg{' '}
+          <input
+            type="color"
+            value={team.primary_color}
+            onChange={(e) => changeColors(e.target.value, team.secondary_color)}
+          />
+        </label>
+        <label>
+          Detaljfärg{' '}
+          <input
+            type="color"
+            value={team.secondary_color}
+            onChange={(e) => changeColors(team.primary_color, e.target.value)}
+          />
+        </label>
+      </section>
 
       <section className="card">
         <h2>Formation</h2>

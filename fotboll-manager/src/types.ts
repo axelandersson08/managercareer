@@ -35,6 +35,8 @@ export interface Team {
   budget: number
   arena_level: number
   academy_level: number
+  primary_color: string
+  secondary_color: string
   created_at: string
 }
 

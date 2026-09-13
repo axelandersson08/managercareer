@@ -1,21 +1,36 @@
 import type { Position } from '../types'
 
-const FIRST_NAMES = [
-  'Erik', 'Lucas', 'Oscar', 'Noah', 'William', 'Hugo', 'Liam', 'Elias',
-  'Axel', 'Leo', 'Adam', 'Theo', 'Anton', 'Filip', 'Alve', 'Melvin',
-  'Vincent', 'Alexander', 'Gustav', 'Charlie', 'Nils', 'Emil', 'Isak', 'Viggo',
-]
-const LAST_NAMES = [
-  'Andersson', 'Johansson', 'Karlsson', 'Nilsson', 'Eriksson', 'Larsson',
-  'Olsson', 'Persson', 'Svensson', 'Gustafsson', 'Pettersson', 'Jonsson',
-  'Jansson', 'Hansson', 'Bengtsson', 'Lindqvist', 'Berg', 'Lindberg',
+// Namnpooler per nordiskt land — inspirerat av Nordiska Superligan-projektet,
+// så truppen känns som ett riktigt nordiskt lag istället för bara svenskt.
+const NAME_POOLS: { first: string[]; last: string[] }[] = [
+  // Sverige
+  {
+    first: ['Erik', 'Lucas', 'Oscar', 'William', 'Hugo', 'Liam', 'Elias', 'Axel', 'Leo', 'Anton', 'Filip', 'Melvin', 'Gustav', 'Nils', 'Emil', 'Isak'],
+    last: ['Andersson', 'Johansson', 'Karlsson', 'Nilsson', 'Eriksson', 'Larsson', 'Olsson', 'Svensson', 'Gustafsson', 'Pettersson', 'Lindqvist', 'Berg'],
+  },
+  // Norge
+  {
+    first: ['Magnus', 'Jonas', 'Sander', 'Mathias', 'Kristian', 'Håkon', 'Emil', 'Ola', 'Bjørn', 'Sindre', 'Odin', 'Tobias'],
+    last: ['Hansen', 'Johansen', 'Olsen', 'Larsen', 'Andersen', 'Pedersen', 'Nilsen', 'Kristiansen', 'Jensen', 'Karlsen', 'Berg', 'Haugen'],
+  },
+  // Danmark
+  {
+    first: ['Mikkel', 'Frederik', 'Lasse', 'Mathias', 'Emil', 'Anders', 'Nikolaj', 'Christian', 'Jonas', 'Rasmus', 'Kasper', 'Magnus'],
+    last: ['Nielsen', 'Jensen', 'Hansen', 'Pedersen', 'Andersen', 'Christensen', 'Larsen', 'Sørensen', 'Rasmussen', 'Poulsen', 'Møller', 'Christiansen'],
+  },
+  // Finland
+  {
+    first: ['Mikko', 'Juho', 'Aleksi', 'Onni', 'Eetu', 'Väinö', 'Elias', 'Leevi', 'Niklas', 'Joel', 'Aatu', 'Oskari'],
+    last: ['Korhonen', 'Virtanen', 'Mäkinen', 'Nieminen', 'Mäkelä', 'Hämäläinen', 'Laine', 'Heikkinen', 'Koskinen', 'Järvinen', 'Lehtonen', 'Salminen'],
+  },
 ]
 
 function randomName(used: Set<string>): string {
   let name = ''
   do {
-    const f = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)]
-    const l = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)]
+    const pool = NAME_POOLS[Math.floor(Math.random() * NAME_POOLS.length)]
+    const f = pool.first[Math.floor(Math.random() * pool.first.length)]
+    const l = pool.last[Math.floor(Math.random() * pool.last.length)]
     name = `${f} ${l}`
   } while (used.has(name))
   used.add(name)

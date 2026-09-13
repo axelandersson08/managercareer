@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { computeStandings, type StandingRow } from '../lib/standings'
+import TeamBadge from '../components/TeamBadge'
 import type { Division, Fixture, Season, Team } from '../types'
 
 interface DivisionBlock {
@@ -16,6 +17,7 @@ export default function LeagueView() {
   const [blocks, setBlocks] = useState<DivisionBlock[]>([])
   const [cupFixtures, setCupFixtures] = useState<Fixture[]>([])
   const [teamNames, setTeamNames] = useState<Record<string, string>>({})
+  const [teamColors, setTeamColors] = useState<Record<string, { primary: string; secondary: string }>>({})
 
   useEffect(() => {
     ;(async () => {
@@ -59,10 +61,17 @@ export default function LeagueView() {
         .order('cup_round', { ascending: true })
       setCupFixtures((cup as Fixture[]) ?? [])
 
-      const { data: allTeams } = await supabase.from('teams').select('id,name')
+      const { data: allTeams } = await supabase
+        .from('teams')
+        .select('id,name,primary_color,secondary_color')
       const names: Record<string, string> = {}
-      for (const t of allTeams ?? []) names[t.id] = t.name
+      const colors: Record<string, { primary: string; secondary: string }> = {}
+      for (const t of allTeams ?? []) {
+        names[t.id] = t.name
+        colors[t.id] = { primary: t.primary_color, secondary: t.secondary_color }
+      }
       setTeamNames(names)
+      setTeamColors(colors)
     })()
   }, [])
 
@@ -99,7 +108,10 @@ export default function LeagueView() {
             <tbody>
               {block.standings.map((row) => (
                 <tr key={row.teamId}>
-                  <td>{row.name}</td>
+                  <td>
+                    <TeamBadge name={row.name} primaryColor={row.primaryColor} secondaryColor={row.secondaryColor} size={20} />
+                    {row.name}
+                  </td>
                   <td>{row.played}</td>
                   <td>{row.won}</td>
                   <td>{row.drawn}</td>
@@ -120,7 +132,21 @@ export default function LeagueView() {
                 .sort((a, b) => (a.matchday ?? 0) - (b.matchday ?? 0))
                 .map((f) => (
                   <li key={f.id}>
-                    Omg {f.matchday}: {teamNames[f.home_team_id]} vs {teamNames[f.away_team_id ?? '']} —{' '}
+                    Omg {f.matchday}:{' '}
+                    <TeamBadge
+                      name={teamNames[f.home_team_id] ?? '?'}
+                      primaryColor={teamColors[f.home_team_id]?.primary}
+                      secondaryColor={teamColors[f.home_team_id]?.secondary}
+                      size={18}
+                    />
+                    {teamNames[f.home_team_id]} vs{' '}
+                    <TeamBadge
+                      name={teamNames[f.away_team_id ?? ''] ?? '?'}
+                      primaryColor={teamColors[f.away_team_id ?? '']?.primary}
+                      secondaryColor={teamColors[f.away_team_id ?? '']?.secondary}
+                      size={18}
+                    />
+                    {teamNames[f.away_team_id ?? '']} —{' '}
                     {f.status === 'finished' ? (
                       <strong>
                         {f.home_score}-{f.away_score}
@@ -147,8 +173,28 @@ export default function LeagueView() {
               <ul className="list">
                 {cupByRound.get(round)!.map((f) => (
                   <li key={f.id}>
+                    <TeamBadge
+                      name={teamNames[f.home_team_id] ?? '?'}
+                      primaryColor={teamColors[f.home_team_id]?.primary}
+                      secondaryColor={teamColors[f.home_team_id]?.secondary}
+                      size={18}
+                    />
                     {teamNames[f.home_team_id]}
-                    {f.away_team_id ? ` vs ${teamNames[f.away_team_id]}` : ' (frilott)'} —{' '}
+                    {f.away_team_id ? (
+                      <>
+                        {' vs '}
+                        <TeamBadge
+                          name={teamNames[f.away_team_id] ?? '?'}
+                          primaryColor={teamColors[f.away_team_id]?.primary}
+                          secondaryColor={teamColors[f.away_team_id]?.secondary}
+                          size={18}
+                        />
+                        {teamNames[f.away_team_id]}
+                      </>
+                    ) : (
+                      ' (frilott)'
+                    )}{' '}
+                    —{' '}
                     {f.status === 'finished' ? (
                       <strong>
                         {f.away_team_id ? `${f.home_score}-${f.away_score}` : 'vidare'}

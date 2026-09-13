@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
+import TeamBadge from '../components/TeamBadge'
 import type { Fixture, MatchEvent, Player, Team } from '../types'
 
 /**
@@ -117,7 +118,9 @@ export default function LiveMatch() {
     <div>
       <header className="topbar">
         <h1>
+          <TeamBadge name={homeTeam.name} primaryColor={homeTeam.primary_color} secondaryColor={homeTeam.secondary_color} />
           {homeTeam.name} {fixture.home_score} - {fixture.away_score} {awayTeam.name}
+          <TeamBadge name={awayTeam.name} primaryColor={awayTeam.primary_color} secondaryColor={awayTeam.secondary_color} />
         </h1>
         <span>
           {label} —{' '}

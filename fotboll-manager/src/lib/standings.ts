@@ -3,6 +3,8 @@ import type { Fixture } from '../types'
 export interface StandingRow {
   teamId: string
   name: string
+  primaryColor?: string | null
+  secondaryColor?: string | null
   played: number
   won: number
   drawn: number
@@ -13,7 +15,7 @@ export interface StandingRow {
 }
 
 export function computeStandings(
-  teams: { id: string; name: string }[],
+  teams: { id: string; name: string; primary_color?: string | null; secondary_color?: string | null }[],
   fixtures: Fixture[]
 ): StandingRow[] {
   const rows = new Map<string, StandingRow>()
@@ -21,6 +23,8 @@ export function computeStandings(
     rows.set(t.id, {
       teamId: t.id,
       name: t.name,
+      primaryColor: t.primary_color,
+      secondaryColor: t.secondary_color,
       played: 0,
       won: 0,
       drawn: 0,

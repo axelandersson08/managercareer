@@ -68,6 +68,8 @@ create table if not exists teams (
   budget numeric not null default 5000000,
   arena_level int not null default 1,
   academy_level int not null default 1,
+  primary_color text not null default '#1d4ed8', -- klubbens dräktfärger, valda av ägaren
+  secondary_color text not null default '#ffffff',
   created_at timestamptz default now()
 );
 
@@ -287,8 +289,8 @@ begin
   insert into players (team_id, name, position, age, rating, is_starting)
     values (
       p_team_id,
-      (array['Alexander','Emil','Isak','Melker','Sixten','Love','Malte','Elton'])[1 + floor(random()*8)::int]
-        || ' ' || (array['Björk','Åberg','Holm','Ek','Sandberg','Åkesson'])[1 + floor(random()*6)::int],
+      (array['Alexander','Emil','Isak','Melker','Magnus','Mikkel','Onni','Sander','Frederik','Aleksi'])[1 + floor(random()*10)::int]
+        || ' ' || (array['Björk','Åberg','Holm','Ek','Hansen','Nielsen','Korhonen','Larsen','Møller','Virtanen'])[1 + floor(random()*10)::int],
       v_pos,
       16 + floor(random() * 3)::int,
       45 + v_level + floor(random() * 10)::int,
@@ -540,6 +542,13 @@ begin
   end loop;
 end;
 $$;
+
+-- ============ MIGRERING (om du kör detta mot ett projekt som redan finns) ============
+-- Om du redan har kört ett äldre schema.sql och bara vill lägga till
+-- klubbfärgerna utan att nollställa allt, kör bara de här två raderna i
+-- SQL Editor istället för hela filen ovanför:
+--   alter table teams add column if not exists primary_color text not null default '#1d4ed8';
+--   alter table teams add column if not exists secondary_color text not null default '#ffffff';
 
 -- ============ REALTIME ============
 -- Slå på i Supabase Dashboard -> Database -> Replication för:

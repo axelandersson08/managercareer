@@ -12,6 +12,14 @@ annat: matcherna flyttades från klienten till en riktig serverfunktion, och
 fria agenter prissätts dynamiskt). Kör mot ett nytt/tomt Supabase-projekt,
 eller töm det gamla, innan du kör det nya schemat.
 
+**Nytt i den här versionen:** klubbfärger (lagägaren väljer två färger på
+lagsidan, som sedan visas som ett litet vapensköldsmärke överallt i spelet)
+och spelarnamn slumpas nu från hela Norden (Sverige/Norge/Danmark/Finland)
+istället för bara svenska namn. Har du redan ett Supabase-projekt uppe
+behöver du INTE köra om hela `schema.sql` (det skulle krascha på
+"already exists") — kör bara migreringsraderna som står under rubriken
+"MIGRERING" längst ner i filen.
+
 ## Kom igång
 
 ### 1. Grundinstallationen (samma som innan)
@@ -155,7 +163,8 @@ src/
   lib/seasonEngine.ts          Divisionsindelning (inkl. upp-/nedflyttning), ligaschema, cuplottning
   lib/cupProgress.ts           Triggar nästa cupomgång via databasfunktionen (admin-reserv)
   lib/standings.ts             Tabellberäkning
-  lib/generateSquad.ts         Slumpar truppar och fria agenter
+  lib/generateSquad.ts         Slumpar truppar och fria agenter (nordiska namn)
+  components/TeamBadge.tsx     Lagets vapensköld i klubbfärgerna
   context/AuthContext.tsx      Inloggning
   hooks/useMyTeam.ts           Hämtar den inloggades eget lag
   pages/

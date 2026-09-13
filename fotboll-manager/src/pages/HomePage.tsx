@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useMyTeam } from '../hooks/useMyTeam'
 import { computeStandings } from '../lib/standings'
+import TeamBadge from '../components/TeamBadge'
 import type { Division, Fixture, Player, Team } from '../types'
 
 export default function HomePage() {
@@ -71,7 +72,10 @@ export default function HomePage() {
   return (
     <div>
       <header className="topbar">
-        <h1>{team.name}</h1>
+        <h1>
+          <TeamBadge name={team.name} primaryColor={team.primary_color} secondaryColor={team.secondary_color} />
+          {team.name}
+        </h1>
       </header>
 
       <section className="card">

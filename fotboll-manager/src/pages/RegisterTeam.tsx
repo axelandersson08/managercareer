@@ -4,6 +4,19 @@ import { useAuth } from '../context/AuthContext'
 import { useMyTeam } from '../hooks/useMyTeam'
 import { generateSquad } from '../lib/generateSquad'
 
+// Slumpade dräktfärgspar så nya lag inte alla blir likadant blåa —
+// coachen kan sen ändra dem själv på lagsidan.
+const COLOR_PRESETS: [string, string][] = [
+  ['#1d4ed8', '#ffffff'],
+  ['#dc2626', '#facc15'],
+  ['#15803d', '#ffffff'],
+  ['#0f172a', '#38bdf8'],
+  ['#7c2d12', '#fbbf24'],
+  ['#4c1d95', '#f5f3ff'],
+  ['#164e63', '#f97316'],
+  ['#831843', '#fce7f3'],
+]
+
 export default function RegisterTeam() {
   const { user, profile } = useAuth()
   const { refresh } = useMyTeam()
@@ -16,9 +29,10 @@ export default function RegisterTeam() {
     if (!user) return
     setBusy(true)
     setError(null)
+    const [primary_color, secondary_color] = COLOR_PRESETS[Math.floor(Math.random() * COLOR_PRESETS.length)]
     const { data: team, error: teamError } = await supabase
       .from('teams')
-      .insert({ owner_id: user.id, name: teamName.trim() })
+      .insert({ owner_id: user.id, name: teamName.trim(), primary_color, secondary_color })
       .select()
       .single()
     if (teamError) {
